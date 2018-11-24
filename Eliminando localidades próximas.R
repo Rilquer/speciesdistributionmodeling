@@ -1,22 +1,40 @@
-#Workflow do Script
-##1. Calcular matriz de dist?ncia geogr?fica entre os pontos, ou importar essa matriz
-##de outro programa.
-##2. Calcular para cada localidade quantas localidades est?o a menos de x km de dist?ncia,
-##salvando em arquivo "quant".
-##3. Ordenar as localidades por aquelas que est?o mais pr?ximas de outras (ordenar quant
-##de modo decrescente)
-##5. Excluir a primeira localidade do arquivo "quant" ordenado do arquivo de entrada
-##original.
-##6. Repetir de 1 a 6, at? que cada localidade esteja pr?xima de apenas uma outra.
-##6. Criar um arquivo com os pares de localidades e, guidando-se por ele, excluir
-##uma localidade de cada par, de modo aleat?rio.
+library('optparse')
 
-##Instalando pacotes necess?rios
-install.packages('sp','rgal','raster','rgeos')
-##Definir caminho do arquivo
+option_list = list(
+	make_option("--About the script",type="character",default=NULL,
+		help="This script is designed to filter out coordinates closer than a specified geographic distance, in order to be used in species distribution modeling.
+    Filtering out too close occurence records helps to avoid bias in the modeling procedure due to spatial autocorrelation.", metavar="character"),
+	make_option(c("-f", "--file"), type="character", default=NULL,
+		help="Coordinates file with original occurence records, in the long-lat format, tab separared and with a header containing the words 'long' and 'lat'.", metavar="character"),
+	make_option(c("-m", "--distance"), type="character", default=NULL,
+		help="The minimum distance (in meters) between the final occurrence points to be used for modeling. The script will filter out points that are closer
+    than this specified distance.", metavar="character"),
 
+  )
 
-##Criar fun??o para filtrar os pontos. Rodar primeiro o c?digo daqui at? a linha 115.
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser)
+
+if (is.null(opt)){
+  print_help(opt_parser)
+  stop("You must provide the following mandaroty arguments: --file, --distance", call.=FALSE)
+}
+if (is.null(opt$file)) {
+  print_help(opt_parser)
+  stop("You must provide the input coordinates file (--file).", call.=FALSE)
+}
+if (is.null(opt$distance)) {
+  print_help(opt_parser)
+  stop("You must provide the distance threshold for filtering (--distance).", call.=FALSE)
+}
+
+packages=c('sp','rgal','raster','rgeos')
+for (i in packages) {
+  if ((i %in% installed.packages())==FALSE) {
+    install.packages(i,dependencies=TRUE,repos='http://cran.us.r-project.org')
+  }
+}
+
 geodel <- function(x,m) {
 
 #Carregando pacotes necess?rios
@@ -26,7 +44,7 @@ library(raster)
 library(rgeos)
 
 #Criando fun??o que calcula a dist?ncia
-distcalc <- function(x,m) { 
+distcalc <- function(x,m) {
   ##Define quais as colunas que tem as coordenadas
   coordinates(x) <- c('long', 'lat')
   ##Define o sistema de coordenadas
@@ -70,8 +88,8 @@ repeat {
   ##parar o loop. Se n?o, pegar a localidade com maior quantidade de pares pr?ximos
   ##e remover do data frame original, utilizado no c?lculo da dist?ncia.
   if (all(quant$quant<=1)) {
-    break  
-  } else { 
+    break
+  } else {
     remove<-quant[1,1]
     points<-points[-remove,]
     nremoved<-nremoved+1
@@ -116,4 +134,4 @@ cat(paste("Arquivo filtrado com sucesso. Foram removidos ",nremoved," pontos. As
 ##Rodar primeiro at? aqui. Depois, rodar a linha abaixo, colocando o nome do
 ##seu arquivo e a dist?ncia m?nima em metros.
 
-geodel('cyanocorax_cyanopogon.txt',10000)
+geodel(opt$file,opt$distance)
