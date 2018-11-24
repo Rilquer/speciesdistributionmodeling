@@ -12,7 +12,7 @@ option_list = list(
 		help="Coordinates file with original occurence records, in the long-lat format, tab separared and with a header containing the words 'long' and 'lat'.", metavar="character"),
 	make_option(c("-m", "--distance"), type="character", default=NULL,
 		help="The minimum distance (in meters) between the final occurrence points to be used for modeling. The script will filter out points that are closer
-    than this specified distance.", metavar="character")
+    than this specified distance.", metavar="character")1
 
   )
 
@@ -32,7 +32,7 @@ if (is.null(opt$distance)) {
   stop("You must provide the distance threshold for filtering (--distance).", call.=FALSE)
 }
 
-packages=c('sp','rgal','raster','rgeos')
+packages=c('sp','rgdal','raster','rgeos')
 for (i in packages) {
   if ((i %in% installed.packages())==FALSE) {
     install.packages(i,dependencies=TRUE,repos='http://cran.us.r-project.org')
