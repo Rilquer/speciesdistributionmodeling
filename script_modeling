@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
-##Rilquer Mascarenhas
-##Version: Nov 24 2018 - 13:51
+#Rilquer Mascarenhas
+#Last updates: Nov 24 - 15:00
 
 if (("optparse" %in% installed.packages()) == FALSE) {
 	install.packages('optparse',dependencies=TRUE,repos='http://cran.us.r-project.org')
