@@ -17,7 +17,7 @@ This a script to filter out occurrences that are geographically close, in order 
 
 	The minimum distance (in meters) between the final occurrence points to be used for modeling. The script will filter out points that are closer than this specified distance.
 
-##2. script_modeling: Species Distribution Modeling using BIOMOD package
+## 2. script_modeling: Species Distribution Modeling using BIOMOD package
 
 This is a script to perform SDM using as input a coordinates file, the folder to climatic variables and a few other specific settings. This script uses the packaged BIOMOD2 (Thuiller et al., 2009) and implements all ten algorithms available in the package.
 
@@ -60,6 +60,11 @@ The script can be directly called (i.e., Rscript ./script_modeling) in the folde
 
 	-h, --help
 		Show this help message and exit
+		
+Usage example:
+Modeling a bird species, which coordinates are in the file "cyanocorax_cyanopogon.txt". Variables layers for current conditions are in the folder "current". Past projections will be made for Last Glacial Maximum and Last Interglacial; layers for each period are separated in the folder "LGM" and "LIG", which are in turn inside the folder "past". 1000 pseudo-absence points will be sampled, using a random strategy.
+
+taxon
 
 ### References
 Thuiller, W., Lafourcade, B., Engler, R., & Araújo, M. B. (2009). BIOMOD–a platform for ensemble forecasting of species distributions. Ecography, 32(3), 369-373.
