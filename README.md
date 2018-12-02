@@ -64,7 +64,7 @@ The script can be directly called (i.e., Rscript ./species_modeling) in the fold
 Usage example:
 Modeling a bird species, which coordinates are in the file "cyanocorax_cyanopogon.txt". Variables layers for current conditions are in the folder "current". Past projections will be made for Last Glacial Maximum and Last Interglacial; layers for each period are separated in the folder "LGM" and "LIG", which are in turn inside the folder "past". 1000 pseudo-absence points will be sampled, using a random strategy.
 
-species_modeling -t crow_modeling -f cyanocorax_cyanopogon.txt -d current/ -p past -n 1000
+	species_modeling -t crow_modeling -f cyanocorax_cyanopogon.txt -d current/ -p past -n 1000
 
 ### References
 Thuiller, W., Lafourcade, B., Engler, R., & Araújo, M. B. (2009). BIOMOD–a platform for ensemble forecasting of species distributions. Ecography, 32(3), 369-373.
