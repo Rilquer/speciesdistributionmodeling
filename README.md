@@ -1,12 +1,12 @@
 # Species Distribution Modeling
 
-speciesmodeling: Species Distribution Modeling using BIOMOD package
+distmodeling: Species Distribution Modeling using BIOMOD package
 
 This is a script to perform SDM using as input a coordinates file, the folder to climatic variables and a few other specific settings. This script uses the packaged BIOMOD2 (Thuiller et al., 2009) and implements all ten algorithms available in the package.
 
 This script requires certain R packages (which will be installed when the script is run, if not already present). Additionallty, you must inform the number of pseudo-absence points to be used and the strategy to select those pseudo-absences. Finally, it requires files maxent.jar and maxent.bat in the same directory the script is run. More info can be seen in the Biomod help files (specifically acessed by using ??BIOMOD_FormatingData in R).
 
-The script can be directly called (i.e., Rscript ./species_modeling) in the folder it is located, or copied to the bin folder to be called as an executable from any location.
+The script can be directly called (i.e., Rscript distmodeling) in the folder it is located, or copied to the bin folder to be called as an executable from any location.
 
 	[OPTIONS]
 
@@ -47,7 +47,7 @@ The script can be directly called (i.e., Rscript ./species_modeling) in the fold
 Usage example:
 Modeling a bird species, which coordinates are in the file "cyanocorax_cyanopogon.txt". Variables layers for current conditions are in the folder "current". Past projections will be made for Last Glacial Maximum and Last Interglacial; layers for each period are separated in the folder "LGM" and "LIG", which are in turn inside the folder "past". 1000 pseudo-absence points will be sampled, using a random strategy.
 
-	speciesmodeling -t crow_modeling -f cyanocorax_cyanopogon.txt -d current/ -p past -n 1000
+	Rscript distmodeling -t crow_modeling -f cyanocorax_cyanopogon.txt -d current/ -p past -n 1000
 
 ### References
 Thuiller, W., Lafourcade, B., Engler, R., & Araújo, M. B. (2009). BIOMOD–a platform for ensemble forecasting of species distributions. Ecography, 32(3), 369-373.
