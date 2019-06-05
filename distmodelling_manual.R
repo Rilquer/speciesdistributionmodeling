@@ -172,3 +172,5 @@ if (!is.null(opt$projection)) {
                                                     binary.meth= 'TSS')
   }
 }
+
+unlink(paste0('rastertemp_',opt$title), recursive = TRUE)
