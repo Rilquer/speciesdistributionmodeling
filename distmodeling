@@ -18,13 +18,13 @@ option_list = list(
               help="Name for this modeling analysis.", metavar="character"),
   make_option(c("-f", "--file"), type="character", default=NULL,
               help="File with coordinates in long-lat format, tab separated and without header", metavar="character"),
-  make_option(c("-d", "--dir"), type="character", default="NULL",
+  make_option(c("-d", "--dir"), type="character", default=NULL,
               help="Path to the directory with climatic variables from current period, to be used in model calibration.", metavar="character"),
   make_option(c("-m", "--format"), type="character", default="tif",
               help="Format of variables files (either asc, grd or tif). [default= %default]", metavar="character"),            
-  make_option(c("-p", "--projection"), type="character", default="NULL",
+  make_option(c("-p", "--projection"), type="character", default=NULL,
               help="Path to the directory with climatic variables for future or past projections (optional). MUST NOT have final slash '/' in the end of path. Climatic variables for different periods must be separated in different subfolders inside the folder. The name of the subfolders will be the name used for the projections outputed by Biomod for the respective period.", metavar="character"),
-  make_option(c("-n","--panumber"), type="numeric", default="1000",
+  make_option(c("-n","--panumber"), type="numeric", default=1000,
               help="Number of pseudo-asbences to be selected. [default= %default]", metavar="character"),
   make_option(c("-s", "--strategy"), type="character", default="random",
               help="Strategy for selection of pseudo-absence points. Either 'random', 'disk' or 'sre'. Random strategy samples pseudo-absence from all the background environment
@@ -32,9 +32,9 @@ option_list = list(
               be sampled (this is useful to avoid sampling in cells to close to occurence points, which can result in overfit, and to secure inclusion of similar abiotic conditions out of the range of
               the focal species). Sre strategy first creates a bioclimatic envelope of the occurence points and samples pseudo-absence points from areas which differs from this envelope at least by
               a proportion set by the user. As the biomod help informs, this can lead to overoptimistic models. [default= %default]", metavar="character"),
-  make_option(c("--min"), type="numeric", default="NULL",
+  make_option(c("--min"), type="numeric", default=NULL,
               help="Minimum distance for strategy 'disk', in meters", metavar="character"),
-  make_option(c("--max"), type="numeric", default="NULL",
+  make_option(c("--max"), type="numeric", default=NULL,
               help="Maximum distance for strategy 'disk', in meters", metavar="character"),
   make_option(c("--sre-proportion"), type="numeric", default=0.5,
               help="Similarity proportion for strategy 'sre' (between 0.25 and 0.5). [default= %default]", metavar="character"),
