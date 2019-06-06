@@ -4,6 +4,7 @@
 if (!require(optparse)) {
   install.packages('optparse',dependencies=TRUE,repos='http://cran.us.r-project.org')
 }
+library(optparse)
 
 option_list = list(
   make_option("--About the script",type="character",default=NULL,
@@ -34,7 +35,9 @@ option_list = list(
   make_option(c("--max"), type="numeric", default="NULL",
               help="Maximum distance for strategy 'disk', in meters", metavar="character"),
   make_option(c("--sre-proportion"), type="numeric", default=0.5,
-              help="Similarity proportion for strategy 'sre' (between 0.25 and 0.5)", metavar="character")
+              help="Similarity proportion for strategy 'sre' (between 0.25 and 0.5)", metavar="character"),
+  make_option(c("-c","--threads"), type="numeric", default=1,
+              help="Number of maximum threads to be used by biomod2.", metavar="character")
   )
 
 opt_parser = OptionParser(option_list=option_list);
@@ -68,6 +71,16 @@ if (!require(raster)) {
 if (!require(biomod2)) {
   install.packages('biomod2',dependencies=TRUE,repos='http://cran.us.r-project.org')
 }
+if (!require(doParallel)) {
+  install.packages('doParallel',dependencies=TRUE,repos='http://cran.us.r-project.org')
+}
+
+library(sp)
+library(raster)
+library(biomod2)
+library(doParallel)
+
+registerDoParallel(makeCluster(opt$threads))
 
 ##BIOMOD_FormatingData
 message('Reading coordinates...')
@@ -78,7 +91,6 @@ calibperiod <- list.files(paste0(opt$dir,'/'),pattern=c('.asc','.grd','.tif'))
 current <- stack(paste0(opt$dir,'/',calibperiod))
 layers <- paste0('var',1:NROW(calibperiod))
 names(current)<-layers
-
 
 if (!is.null(opt$projection)) {
   projperiods <- list.dirs(path=opt$projection)
@@ -94,8 +106,6 @@ if (!is.null(opt$projection)) {
     names(projvar[[i]]) <- layers
   }
 }
-
-library(biomod2)
 
 if (opt$strategy=='random') {
   dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = opt$title, PA.nb.rep = 10,
