@@ -14,7 +14,7 @@
 
 #This line creates a list of all setting necessary for the script. Don't modify this!!
 opt <- list(title=NULL,file=NULL,dir=NULL,projection=NULL,panumber=1000,strategy='random',min=NULL,max=NULL,
-         sre.proportion=NULL)
+         sre.proportion=NULL,threads=1)
 
 #On the line above, all settings were created, and now they need to be set. For each setting below, the previous
 #line is commented and explains what the setting is about. Pay attention on mandatory settings, that need to be
@@ -65,6 +65,9 @@ opt$max
 #Similarity proportion for strategy 'sre' (between 0.25 and 0.5).
 opt$sre.proportion
 
+#Number of maximum threads to be used by biomod2. Default=1
+opt$threads
+
 #Checking arguments
 if (is.null(opt$title)) {
   stop("You must provide the name for the analysis.", call.=FALSE)
@@ -86,6 +89,13 @@ if (!require(raster)) {
 if (!require(biomod2)) {
   install.packages('biomod2',dependencies=TRUE,repos='http://cran.us.r-project.org')
 }
+if (!require(doParallel)) {
+  install.packages('doParallel',dependencies=TRUE,repos='http://cran.us.r-project.org')
+}
+library(sp)
+library(raster)
+library(biomod2)
+library(doParallel)
 
 ##BIOMOD_FormatingData
 message('Reading coordinates...')
@@ -96,7 +106,6 @@ calibperiod <- list.files(paste0(opt$dir,'/'),pattern=c('.asc','.grd','.tif'))
 current <- stack(paste0(opt$dir,'/',calibperiod))
 layers <- paste0('var',1:NROW(calibperiod))
 names(current)<-layers
-
 
 if (!is.null(opt$projection)) {
   projperiods <- list.dirs(path=opt$projection)
@@ -112,8 +121,6 @@ if (!is.null(opt$projection)) {
     names(projvar[[i]]) <- layers
   }
 }
-
-library(biomod2)
 
 if (opt$strategy=='random') {
   dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = opt$title, PA.nb.rep = 10,
