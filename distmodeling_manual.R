@@ -13,7 +13,7 @@
 #when in the folder it is located, or copied to the bin folder to be called as an executable from any location.
 
 #This line creates a list of all setting necessary for the script. Don't modify this!!
-opt <- list(title=NULL,file=NULL,dir=NULL,projection=NULL,panumber=1000,strategy='random',min=NULL,max=NULL,
+opt <- list(title=NULL,file=NULL,dir=NULL,format='tif',projection=NULL,panumber=1000,strategy='random',min=NULL,max=NULL,
          sre.proportion=NULL,threads=1)
 
 #On the line above, all settings were created, and now they need to be set. For each setting below, the previous
@@ -28,9 +28,13 @@ opt$title
 opt$file
 
 #Path to the directory with the climatic variables from the current period (i.e., present climatic conditions)
-#to be used in model calibration. Accepted formats are .asc, .grd or .tif.
+#to be used in model calibration.
 #Must be typed between quotes.
 opt$dir
+
+#Format of variables files (either asc, grd or tif). Default is tif.
+#Must be typed between quotes.
+opt$format
 
 #Path to the directory with climatic variables for future or past projections (optional, leave blank if
 #you do not wish to project the model into other periods.). MUST NOT have the final slash '/' in the end of path.
