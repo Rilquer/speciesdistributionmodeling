@@ -19,7 +19,9 @@ option_list = list(
   make_option(c("-f", "--file"), type="character", default=NULL,
               help="File with coordinates in long-lat format, tab separated and without header", metavar="character"),
   make_option(c("-d", "--dir"), type="character", default="NULL",
-              help="Path to the directory with climatic variables from current period, to be used in model calibration. Accepted formats are .asc, .grd or .tif", metavar="character"),
+              help="Path to the directory with climatic variables from current period, to be used in model calibration.", metavar="character"),
+  make_option(c("-m", "--format"), type="character", default="tif",
+              help="Format of variables files (either asc, grd or tif). [default= %default]", metavar="character"),            
   make_option(c("-p", "--projection"), type="character", default="NULL",
               help="Path to the directory with climatic variables for future or past projections (optional). MUST NOT have final slash '/' in the end of path. Climatic variables for different periods must be separated in different subfolders inside the folder. The name of the subfolders will be the name used for the projections outputed by Biomod for the respective period.", metavar="character"),
   make_option(c("-n","--panumber"), type="numeric", default="1000",
@@ -35,9 +37,9 @@ option_list = list(
   make_option(c("--max"), type="numeric", default="NULL",
               help="Maximum distance for strategy 'disk', in meters", metavar="character"),
   make_option(c("--sre-proportion"), type="numeric", default=0.5,
-              help="Similarity proportion for strategy 'sre' (between 0.25 and 0.5)", metavar="character"),
+              help="Similarity proportion for strategy 'sre' (between 0.25 and 0.5). [default= %default]", metavar="character"),
   make_option(c("-c","--threads"), type="numeric", default=1,
-              help="Number of maximum threads to be used by biomod2.", metavar="character")
+              help="Number of maximum threads to be used by biomod2. [default= %default]", metavar="character")
   )
 
 opt_parser = OptionParser(option_list=option_list);
@@ -87,7 +89,7 @@ message('Reading coordinates...')
 coordinates <- SpatialPoints(read.table(opt$file, sep='\t'))
 
 message('Reading climatic variables for current period...')
-calibperiod <- list.files(paste0(opt$dir,'/'),pattern=c('.asc','.grd','.tif'))
+calibperiod <- list.files(paste0(opt$dir,'/'),pattern=paste0('.',opt$format))
 current <- stack(paste0(opt$dir,'/',calibperiod))
 layers <- paste0('var',1:NROW(calibperiod))
 names(current)<-layers
