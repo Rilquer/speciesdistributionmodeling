@@ -115,7 +115,8 @@ if (!is.null(opt$projection)) {
   projperiods <- list.dirs(path=opt$projection)
   projperiods <- projperiods[2:NROW(projperiods)]
   for (i in 1:NROW(projperiods)) {
-    projperiods[i] <- strsplit(projperiods[i],"/")[[1]][2]
+    projvec <- strsplit(projperiods[i],"/")[[1]]
+    projperiods[i] <- projvec[length(projvec)]
   }
   projvar <- list()
   for (i in 1:length(projperiods)) {
