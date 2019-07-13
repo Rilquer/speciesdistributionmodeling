@@ -86,9 +86,11 @@ registerDoParallel(makeCluster(opt$threads))
 
 ##BIOMOD_FormatingData
 message('Reading coordinates...')
+message('')
 coordinates <- SpatialPoints(read.table(opt$file, sep='\t'))
 
 message('Reading climatic variables for current period...')
+message('')
 calibperiod <- list.files(paste0(opt$dir,'/'),pattern=paste0('.',opt$format))
 current <- stack(paste0(opt$dir,'/',calibperiod))
 layers <- paste0('var',1:NROW(calibperiod))
@@ -104,6 +106,7 @@ if (!is.null(opt$projection)) {
   projvar <- list()
   for (i in 1:length(projperiods)) {
     message('Reading climatic variables for period ',projperiods[i])
+    message('')
     files <- list.files(paste0(opt$projection,'/',projperiods[i],'/'),pattern=c('.asc','.grd','.tif'))
     projvar[[i]] <- stack(paste0(opt$projection,'/',projperiods[i],'/',files))
     names(projvar[[i]]) <- layers
@@ -127,6 +130,7 @@ options <- BIOMOD_ModelingOptions()
 
 ##Calibrando o modelo
 message('Running model calibration...')
+message('')
 
 model <- BIOMOD_Modeling(data = dados, models = c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT.Phillips'),
                          models.options = options, DataSplit = 75, models.eval.meth = 'TSS', SaveObj = TRUE,
@@ -141,7 +145,8 @@ current.projection <- BIOMOD_Projection(modeling.output=model, new.env = current
 if (!is.null(opt$projection)) {
   projmodels <- list()
   for (i in 1:length(projvar)) {
-    message('Running projection of model for directory',projperiods[i])
+    message('Running projection of model for directory ',projperiods[i])
+    message('')
     projmodels[[i]] <- BIOMOD_Projection(modeling.output=model, new.env = projvar[[i]],
                                          proj.name=paste0('period_',projperiods[i],'.projection'), selected.models="all",
                                          binary.meth= 'TSS', output.format=".grd", do.stack=FALSE, build.clamping.mask=TRUE)
@@ -150,6 +155,7 @@ if (!is.null(opt$projection)) {
 
 ##BIOMOD_EnsembleModeling (biomod2)
 message('Running calibration of ensembled model...')
+message('')
 ensemble.model <- BIOMOD_EnsembleModeling(model, chosen.models = 'all', em.by = 'all',
                                           eval.metric = 'all', eval.metric.quality.threshold = 0.9,
                                           models.eval.meth = 'TSS', prob.mean = TRUE,prob.cv=TRUE,prob.mean.weight=TRUE)
@@ -161,7 +167,8 @@ current.ensembled <- BIOMOD_EnsembleForecasting(ensemble.model, projection.outpu
 if (!is.null(opt$projection)) {
   projensemble=list()
   for (i in 1:length(projmodels)) {
-    message('Running projection of ensembled model for directory',projperiods[i])
+    message('Running projection of ensembled model for directory ',projperiods[i])
+    message('')
     projensemble[[i]] <- BIOMOD_EnsembleForecasting(ensemble.model, projection.output = projmodels[[i]],
                                                     selected.models = 'all', proj.name=paste('period_',projperiods[i],'.ensembled',sep=''),
                                                     binary.meth= 'TSS')
