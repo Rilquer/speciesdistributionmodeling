@@ -6,6 +6,8 @@ This is a script to perform SDM using as input a coordinates file, the folder to
 
 This script requires certain R packages (which will be installed when the script is run, if not already present). Additionallty, you must inform the number of pseudo-absence points to be used and the strategy to select those pseudo-absences. Finally, it requires files maxent.jar and maxent.bat in the same directory the script is run. More info can be seen in the Biomod help files (specifically acessed by using ??BIOMOD_FormatingData in R).
 
+Bioclim variables for current and past periods (mid-Holocene, Last Glaciam Maximum and Last Interglacial) can be found in the link https://www.dropbox.com/s/jbu19octwma3l27/bioclim.zip?dl=0. The three AOGCMs CCSM4, MIROC-ESM and MPI-ESM-P were combined into a single bioclimatic dataset, calculating the mean across these three models for each variable, for mid-Holocene and Last Glacial Maximum periods, using the R package _raster_.
+
 Two versions of the scripr are available. _distmodeling_ can be called directly (i.e., Rscript distmodeling) in the folder it is located, or copied to the bin folder to be called as an executable from any location. In this case, the options below need to be provided. The script _distmodeling\_manual_ is proved to allow manual editing of all the inner options of biomod2. In this case, the options need to be provided within the script (check comments in script).
 
 	[OPTIONS]
