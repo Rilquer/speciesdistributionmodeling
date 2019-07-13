@@ -169,7 +169,7 @@ if (!is.null(opt$projection)) {
 message('Running calibration of ensembled model...')
 ensemble.model <- BIOMOD_EnsembleModeling(model, chosen.models = 'all', em.by = 'all',
                                           eval.metric = 'all', eval.metric.quality.threshold = 0.9,
-                                          models.eval.meth = 'TSS', prob.mean = TRUE,prob.cv=TRUE,prob.ci=TRUE,prob.mean.weight=TRUE)
+                                          models.eval.meth = 'TSS', prob.mean = TRUE,prob.cv=TRUE,prob.mean.weight=TRUE)
 
 ##BIOMOD_EnsembleForecasting (biomod2)
 current.ensembled <- BIOMOD_EnsembleForecasting(ensemble.model, projection.output = current.projection,
