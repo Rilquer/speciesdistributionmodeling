@@ -86,20 +86,20 @@ if (is.null(opt$dir)) {
 ##Checking necessary packages and installing those not installed
 if (!require(sp)) {
   install.packages('sp',dependencies=TRUE,repos='http://cran.us.r-project.org')
+  library(sp)
 }
 if (!require(raster)) {
   install.packages('raster',dependencies=TRUE,repos='http://cran.us.r-project.org')
+  library(raster)
 }
 if (!require(biomod2)) {
   install.packages('biomod2',dependencies=TRUE,repos='http://cran.us.r-project.org')
+  library(biomod2)
 }
 if (!require(doParallel)) {
   install.packages('doParallel',dependencies=TRUE,repos='http://cran.us.r-project.org')
+  library(doParallel)       
 }
-library(sp)
-library(raster)
-library(biomod2)
-library(doParallel)
 
 ##BIOMOD_FormatingData
 message('Reading coordinates...')
