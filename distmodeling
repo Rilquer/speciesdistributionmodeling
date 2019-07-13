@@ -86,15 +86,17 @@ registerDoParallel(makeCluster(opt$threads))
 
 ##BIOMOD_FormatingData
 message('Reading coordinates...')
-message('')
 coordinates <- SpatialPoints(read.table(opt$file, sep='\t'))
+message('Done!')
+message('')
 
 message('Reading climatic variables for current period...')
-message('')
 calibperiod <- list.files(paste0(opt$dir,'/'),pattern=paste0('.',opt$format))
 current <- stack(paste0(opt$dir,'/',calibperiod))
 layers <- paste0('var',1:NROW(calibperiod))
 names(current)<-layers
+message('Done!')
+message('')
 
 if (!is.null(opt$projection)) {
   projperiods <- list.dirs(path=opt$projection)
@@ -105,11 +107,12 @@ if (!is.null(opt$projection)) {
   }
   projvar <- list()
   for (i in 1:length(projperiods)) {
-    message('Reading climatic variables for period ',projperiods[i])
-    message('')
+    message('Reading climatic variables for period ',projperiods[i],'...')
     files <- list.files(paste0(opt$projection,'/',projperiods[i],'/'),pattern=c('.asc','.grd','.tif'))
     projvar[[i]] <- stack(paste0(opt$projection,'/',projperiods[i],'/',files))
     names(projvar[[i]]) <- layers
+    message('Done!')
+    message('')
   }
 }
 
@@ -129,7 +132,7 @@ if (opt$strategy=='random') {
 options <- BIOMOD_ModelingOptions()
 
 ##Calibrando o modelo
-message('Running model calibration...')
+message('Running model calibration')
 message('')
 
 model <- BIOMOD_Modeling(data = dados, models = c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT.Phillips'),
@@ -154,7 +157,7 @@ if (!is.null(opt$projection)) {
 }
 
 ##BIOMOD_EnsembleModeling (biomod2)
-message('Running calibration of ensembled model...')
+message('Running calibration of ensembled model')
 message('')
 ensemble.model <- BIOMOD_EnsembleModeling(model, chosen.models = 'all', em.by = 'all',
                                           eval.metric = 'all', eval.metric.quality.threshold = 0.9,
