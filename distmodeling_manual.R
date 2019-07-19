@@ -108,7 +108,7 @@ message('Done!')
 message('')
 
 message('Reading climatic variables for current period...')
-calibperiod <- list.files(paste0(opt$dir,'/'),pattern=c('.asc','.grd','.tif'))
+calibperiod <- list.files(paste0(opt$dir,'/'),pattern=paste0('.',opt$format,'$'))
 current <- stack(paste0(opt$dir,'/',calibperiod))
 layers <- paste0('var',1:NROW(calibperiod))
 names(current)<-layers
@@ -125,7 +125,7 @@ if (!is.null(opt$projection)) {
   projvar <- list()
   for (i in 1:length(projperiods)) {
     message('Reading climatic variables for period ',projperiods[i],'...')
-    files <- list.files(paste0(opt$projection,'/',projperiods[i],'/'),pattern=c('.asc','.grd','.tif'))
+    files <- list.files(paste0(opt$projection,'/',projperiods[i],'/'),pattern=paste0('.',opt$format,'$'))
     projvar[[i]] <- stack(paste0(opt$projection,'/',projperiods[i],'/',files))
     names(projvar[[i]]) <- layers
     message('Done!')
