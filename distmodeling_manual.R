@@ -140,7 +140,7 @@ geodel <- function(x,m) {
 
 ##This is where the user will set parameters for the analysis, into the
 ##list object "opt".
-opt <- list(species=NULL,file=NULL,biomes=NULLfdist=50000,minpoints=15,dir=NULL,format='tif',projection=NULL,panumber=1000,strategy='random',min=NULL,max=NULL,sre.proportion=NULL)
+opt <- list(species=NULL,file=NULL,biomes=NULL,fdist=50000,minpoints=15,dir=NULL,format='tif',projection=NULL,panumber=1000,strategy='random',min=NULL,max=NULL,sre.proportion=NULL)
 
 #On the line above, all settings were created, and now they need to be set. For each setting below, the previous
 #line is commented and explains what the setting is about. Pay attention on mandatory settings, that need to be
@@ -151,7 +151,7 @@ opt$species <- ''
 
 #Alternatively, inform path to file containing the coordinates in decimal format, in Long-lat order, no header
 ##(i.e., first line is first coordinate) and tab separated.
-opt$species <- ''
+opt$file <- ''
 
 ##Getting biomes shapefile
 ##"Complete path to directory containing shapefile to be used when plotting species coordinates. This plot is used to show the final set of coordinates used for modeling each species. MUST contain the name of the layer (name before .shp extension). Mandatory."
@@ -213,20 +213,24 @@ opt$sre.proportion
 #####################################################
 
 ##Setting important variables
-if (!(is.null(opt$species)
-species=scan(opt$species,what='character',sep = '\n')
+coords <- list()
+notmodeledsp <- c()
+if (!is.null(opt$species)) {
+  species <- scan(opt$species,what='character',sep = '\n')  
+} else {
+  species <- strsplit(opt$file,'/')[[1]][[length(strsplit(opt$file,'/')[[1]])]]
+  coords[[1]] <- data.frame(read.table(opt$file,sep='\t'))
+}
 ##ALTERNATIVELY, you can inform the list of species as a character vector in the line below (uncomment line before running)
 #species <- c('')
 
-species.coords <- list()
-notmodeledsp <- c()
 message('\n')
 message('List of species that will be modeled: ')
 species
 message('\n')
 
 ##Creating directory for species plots
-dir.create('species_plots')
+dir.create('coordinates_plots')
 bsplit <- strsplit(opt$biomes,'/')[[1]]
 if (bsplit[1]=='') {
   biomes <- readOGR(dsn = paste0('/',paste0(bsplit[2:length(bsplit)-1],'/',collapse = '')),layer = bsplit[length(bsplit)])
@@ -265,57 +269,51 @@ if (!is.null(opt$projection)) {
 
 for (n in 1:length(species)) {
 
-  ##Getting coordinates and filtering data
-  message('Downloading coordinates for ',species[n])
-  species.coords[[n]] <- data.frame(na.omit(occ_search(scientificName = species[n], fields = c('species','decimalLongitude','decimalLatitude','countryCode','institutionCode'))$data))
-  message('\n')
-  message('Looking for errors in coordinates dataset ',species[n])
-  species.coords[[n]]$countryCode <- countrycode(species.coords[[n]]$countryCode, origin =  'iso2c', destination = 'iso3c')
-  flags <- clean_coordinates(x = species.coords[[n]], lon = "decimalLongitude", lat = "decimalLatitude",
-                             countries = "countryCode", 
-                             species = "species",
-                             tests = c("capitals","centroids", "equal","gbif", "institutions",
-                                       "zeros", "countries"))
-  
-  species.coords[[n]] <- species.coords[[n]][flags$.summary,which(colnames(species.coords[[n]]) %in% c('decimalLongitude',
-                                                                                                       'decimalLatitude'))]
-  colnames(species.coords[[n]]) <- c('long','lat')
-  
-  message('\n')
-  message('Removing spatial autocorrelation for ',species[n],' (filtering localities less than ',opt$fdist/1000,' km apart).')
-  species.coords[[n]] <- geodel(species.coords[[n]],opt$fdist)
-  
-  if (nrow(species.coords[[n]])<opt$minpoints) {
+  if (!is.null(opt$species)) {
+    ##Getting coordinates and filtering data
+    message('Downloading coordinates for ',species[n])
+    coords[[n]] <- data.frame(na.omit(occ_search(scientificName = species[n], fields = c('species','decimalLongitude','decimalLatitude','countryCode','institutionCode'))$data))
     message('\n')
-    message('Not enough points left to model species ',species[n],' (only ', nrow(species.coords[[n]]),' points available. Skipping!')
+    message('Looking for errors in coordinates dataset ',species[n])
+    coords[[n]]$countryCode <- countrycode(coords[[n]]$countryCode, origin =  'iso2c', destination = 'iso3c')
+    flags <- clean_coordinates(x = coords[[n]], lon = "decimalLongitude", lat = "decimalLatitude",
+                               countries = "countryCode", 
+                               species = "species",
+                               tests = c("capitals","centroids", "equal","gbif", "institutions",
+                                         "zeros", "countries"))
+  
+    coords[[n]] <- coords[[n]][flags$.summary,which(colnames(coords[[n]]) %in% c('decimalLongitude',
+                                                                                                         'decimalLatitude'))]
+    colnames(coords[[n]]) <- c('long','lat')
+  }
+  
+  if (opt$fdist!=0) {  
+    message('\n')
+    message('Removing spatial autocorrelation for ',species[n],' (filtering localities less than ',opt$fdist/1000,' km apart).')
+    coords[[n]] <- geodel(coords[[n]],opt$fdist)
+  }
+  
+  if (nrow(coords[[n]])<opt$minpoints) {
+    message('\n')
+    message('Not enough points left to model species ',species[n],' (only ', nrow(coords[[n]]),' points available. Skipping!')
     notmodeledsp<-c(notmodeledsp,species[n])
   } else {
     message('\n')
     message('Plotting coordinates for ',species[n])
-    pdf(file = paste0('species_plots/',species[n],'.pdf'))
-    plot(biomes[which(biomes@data$CD_LEGENDA=='MATA ATLÂNTICA'),],col='seashell')
-    plot(biomes[which(biomes@data$CD_LEGENDA=='CAATINGA'),],col='wheat',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='CERRADO'),],col='slategray1',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='AMAZÔNIA'),],col='thistle',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='PANTANAL'),],col='powderblue',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='PAMPA'),],col='pink',add=T)
-    plot(SpatialPoints(species.coords[[n]]), cex = 0.8, pch = 20, col = 'darkgreen', add = T)
+    pdf(file = paste0('coordinates_plots/',species[n],'.pdf'))
+    plot(biomes,col='seashell')
+    plot(SpatialPoints(coords[[n]]), cex = 0.8, pch = 20, col = 'darkgreen', add = T)
     mtext(species[n],side=1,at = c(-40))
     dev.off()
-    tiff(file = paste0('species_plots/',species[n],'.tif'))
-    plot(biomes[which(biomes@data$CD_LEGENDA=='MATA ATLÂNTICA'),],col='seashell')
-    plot(biomes[which(biomes@data$CD_LEGENDA=='CAATINGA'),],col='wheat',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='CERRADO'),],col='slategray1',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='AMAZÔNIA'),],col='thistle',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='PANTANAL'),],col='powderblue',add=T)
-    plot(biomes[which(biomes@data$CD_LEGENDA=='PAMPA'),],col='pink',add=T)
-    plot(SpatialPoints(species.coords[[n]]), cex = 0.8, pch = 20, col = 'darkgreen', add = T)
+    tiff(file = paste0('coordinates_plots/',species[n],'.tif'))
+    plot(biomes,col='seashell')
+    plot(SpatialPoints(coords[[n]]), cex = 0.8, pch = 20, col = 'darkgreen', add = T)
     mtext(species[n],side=1,at = c(-40))
     dev.off()
     
     ##BIOMOD_FormatingData
     message('Reading coordinates...')
-    coordinates <- SpatialPoints(species.coords[[n]])
+    coordinates <- SpatialPoints(coords[[n]])
     message('Done!')
     message('')
     
