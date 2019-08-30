@@ -140,13 +140,17 @@ geodel <- function(x,m) {
 
 ##This is where the user will set parameters for the analysis, into the
 ##list object "opt".
-opt <- list(species=NULL,biomes=NULLfdist=50000,minpoints=15,dir=NULL,format='tif',projection=NULL,panumber=1000,strategy='random',min=NULL,max=NULL,sre.proportion=NULL)
+opt <- list(species=NULL,file=NULL,biomes=NULLfdist=50000,minpoints=15,dir=NULL,format='tif',projection=NULL,panumber=1000,strategy='random',min=NULL,max=NULL,sre.proportion=NULL)
 
 #On the line above, all settings were created, and now they need to be set. For each setting below, the previous
 #line is commented and explains what the setting is about. Pay attention on mandatory settings, that need to be
 #set for the script to run properly.
 
 #Inform path to textfile with list of species below. File must have one species name per line.
+opt$species <- ''
+
+#Alternatively, inform path to file containing the coordinates in decimal format, in Long-lat order, no header
+##(i.e., first line is first coordinate) and tab separated.
 opt$species <- ''
 
 ##Getting biomes shapefile
@@ -209,6 +213,7 @@ opt$sre.proportion
 #####################################################
 
 ##Setting important variables
+if (!(is.null(opt$species)
 species=scan(opt$species,what='character',sep = '\n')
 ##ALTERNATIVELY, you can inform the list of species as a character vector in the line below (uncomment line before running)
 #species <- c('')
@@ -262,7 +267,7 @@ for (n in 1:length(species)) {
 
   ##Getting coordinates and filtering data
   message('Downloading coordinates for ',species[n])
-  species.coords[[n]] <- data.frame(na.omit(occ_search(scientificName = opt$species[n], fields = c('species','decimalLongitude','decimalLatitude','countryCode','institutionCode'))$data))
+  species.coords[[n]] <- data.frame(na.omit(occ_search(scientificName = species[n], fields = c('species','decimalLongitude','decimalLatitude','countryCode','institutionCode'))$data))
   message('\n')
   message('Looking for errors in coordinates dataset ',species[n])
   species.coords[[n]]$countryCode <- countrycode(species.coords[[n]]$countryCode, origin =  'iso2c', destination = 'iso3c')
@@ -315,14 +320,14 @@ for (n in 1:length(species)) {
     message('')
     
     if (opt$strategy=='random') {
-      dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = opt$species[n], PA.nb.rep = 10,
+      dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = species[n], PA.nb.rep = 10,
                                     PA.nb.absences = as.numeric(opt$panumber), PA.strategy = opt$strategy)
     } else if (opt$strategy=='disk') {
-      dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = opt$species[n], PA.nb.rep = 10,
+      dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = species[n], PA.nb.rep = 10,
                                     PA.nb.absences = as.numeric(opt$panumber), PA.strategy = opt$strategy,
                                     PA.dist.min=as.numeric(opt$min),PA.dist.max = as.numeric(opt$max))
     } else {
-      dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = opt$species[n], PA.nb.rep = 10,
+      dados <- BIOMOD_FormatingData(resp.var = coordinates, expl.var = current, resp.name = species[n], PA.nb.rep = 10,
                                     PA.nb.absences = as.numeric(opt$panumber), PA.strategy = opt$strategy,
                                     PA.sre.quant=as.numeric(opt$sre-proportion))
     }
@@ -335,9 +340,9 @@ for (n in 1:length(species)) {
     
     model <- BIOMOD_Modeling(data = dados, models = c('GLM','GBM','GAM','CTA','ANN','SRE','FDA','MARS','RF','MAXENT.Phillips'),
                              models.options = options, DataSplit = 75, models.eval.meth = 'TSS', SaveObj = TRUE,
-                             do.full.models= TRUE, modeling.id= opt$species[n])
-    dir.create(paste0('rastertemp_',opt$species[n]))
-    rasterOptions(tmpdir = paste0('rastertemp_',opt$species[n]))
+                             do.full.models= TRUE, modeling.id= species[n])
+    dir.create(paste0('rastertemp_',species[n]))
+    rasterOptions(tmpdir = paste0('rastertemp_',species[n]))
     
     current.projection <- BIOMOD_Projection(modeling.output=model, new.env = current,
                                             proj.name='current.projection', selected.models="all",
@@ -376,6 +381,6 @@ for (n in 1:length(species)) {
       }
     }
     
-    unlink(paste0('rastertemp_',opt$species[n]), recursive = TRUE)
+    unlink(paste0('rastertemp_',species[n]), recursive = TRUE)
   }
 }
