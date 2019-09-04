@@ -159,7 +159,7 @@ opt$file <- ''
 opt$biomes <- ''
   
 #Minimum distance for geographical filtering. Only localities away from each other more than the distance set here
-#will be kept for modeling. Distance must be in meter. Type: numeric. Default: 50000 (50 km).
+#will be kept for modeling. Distance must be in meter. Type 0 to deactivate it. Type: numeric. Default: 50000 (50 km).
 opt$fdist
 
 #Set here the minimum number of occurrence points to be used for modeling (only species with a number of points equal to
