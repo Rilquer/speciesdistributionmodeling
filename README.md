@@ -21,15 +21,24 @@ Another source of bioclimatic variables data for species modeling are http://pal
 Two versions of the script are available. _distmodeling.R_ can be called directly (i.e., Rscript distmodeling.R) in the folder it is located, or copied to the bin folder to be called as an executable from any location. In this case, the options below need to be provided. The script _distmodeling\_manual_ is proved to run in R GUI, allowing manual editing of all the inner options in the script. In this case, the options need to be provided within the script (check comments within the script).
 
 	[OPTIONS]
-
+(c("-i", "--species"), type="character", default=NULL,
+              help=".", metavar="character"),
+  make_option(c("-l", "--file"), type="character", default=NULL,
+              help=".", metavar="character"),
+  make_option(c("-b", "--biomes"), type="character", default=NULL,
+  
+  
 	-i CHARACTER, --species=CHARACTER
-		Path to file with the list of species to be analyzed. File must have one species name per line. Mandatory.
+		Path to file with the list of species to be analyzed. File must have one species name per line. Optional only if -l is provided.
+		
+	-l CHARACTER, --file=CHARACTER
+		Path to file coordinates to be modeled. Coordinates must be in decimal format, long-lat order and tab separated. Header MUST NOT be present. Optional only if -i is provided.
 
 	-b CHARACTER, --biomes=CHARACTER
 		Complete path to directory containing shapefile to be used when plotting species coordinates. This plot is used to show the final set of coordinates used for modeling each species. MUST contain the name of the layer (name before .shp extension). Mandatory.
 
 	-f CHARACTER, --fdist=CHARACTER
-		Minimum distance for filtering geographically close localities. Only localities away from each other more than the distance set here will be retained for analyses. Distance must be provided in meters. [default= 50000].
+		Minimum distance for filtering geographically close localities. Only localities away from each other more than the distance set here will be retained for analyses. Distance must be provided in meters. Type 0 to deactivate spatial filtering. [default= 50000].
 
 	-t CHARACTER, --minpoints=CHARACTER
 		Minimum number of geographic points to be used for modeling. Only species with a number of localities equal to or higher than the number set here (after error and geographic distance filtering) will be modeled. [default= 15].
