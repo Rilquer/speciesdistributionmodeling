@@ -240,7 +240,7 @@ if (!is.null(opt$species)) {
   species=scan(opt$species,what='character',sep = '\n')
 } else {
   species <- strsplit(opt$file,'/')[[1]][[length(strsplit(opt$file,'/')[[1]])]]
-  coords[[1]] <- data.frame(read.table(opt$file,sep='\t'))
+  coords[[1]] <- unique(data.frame(read.table(opt$file,sep='\t')))
 }
 
 message('\n')
