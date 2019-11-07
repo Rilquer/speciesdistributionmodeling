@@ -279,7 +279,13 @@ for (n in 1:length(species)) {
   if (opt$fdist!=0) {
     message('\n')
     message('Removing spatial autocorrelation for ',species[n],' (filtering localities less than ',opt$fdist/1000,' km apart).')
-    coords[[n]] <- geodel(coords[[n]],opt$fdist)
+    output <- spThin::thin(occs, 'latitude', 'longitude', 'name', thin.par = 5, reps = 100, locs.thinned.list.return = TRUE, write.files = FALSE, verbose = FALSE)
+    # find the iteration that returns the max number of occurrences
+    maxThin <- which(sapply(output, nrow) == max(sapply(output, nrow)))
+    # if there's more than one max, pick the first one
+    maxThin <- output[[ifelse(length(maxThin) > 1, maxThin[1], maxThin)]]  
+    # subset occs to match only thinned occs
+    coords[[n]] <- occs[as.numeric(rownames(maxThin)),2:3]
   }
   
   if (nrow(coords[[n]])<opt$minpoints) {
