@@ -1,7 +1,5 @@
 # Species Distribution Modeling with BIOMOD
 
-script_modeling: Species Distribution Modeling using BIOMOD package
-
 This is a script to perform SDM using as input a coordinates file, the folder to climatic variables and a few other specific settings. This script uses the packaged BIOMOD2 (Thuiller et al., 2009) and implements all ten algorithms available in the package.
 
 This script requires certain R packages (which will be installed when the script is run, if not already present). Additionallty, you must inform the number of pseudo-absence points to be used and the strategy to select those pseudo-absences. Finally, it requires files maxent.jar and maxent.bat in the same directory the script is run. More info can be seen in the Biomod help files (specifically acessed by using ??BIOMOD_FormatingData in R).
