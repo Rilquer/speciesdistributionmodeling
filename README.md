@@ -1,23 +1,6 @@
-# speciesdistributionmodeling
-General scripts necessary for steps during the SDM approach
+# Species Distribution Modeling with BIOMOD
 
-This repository currently contain the following scripts:
-
-## 1. dist_filter: extracting geographically close occurrence points
-
-This a script to filter out occurrences that are geographically close, in order to avoid a bias due to spatial autocorrelation in the modeling procedure.
-
-	[OPTIONS]
-
-	-f, --file type=CHARACTER
-
-	The file containing the original coordinates to be filtered. They must be in long-lat format, tab separated and with a header named as "long" and "lat"
-
-	-m, --distance type=NUMERIC
-
-	The minimum distance (in meters) between the final occurrence points to be used for modeling. The script will filter out points that are closer than this specified distance.
-
-##2. script_modeling: Species Distribution Modeling using BIOMOD package
+script_modeling: Species Distribution Modeling using BIOMOD package
 
 This is a script to perform SDM using as input a coordinates file, the folder to climatic variables and a few other specific settings. This script uses the packaged BIOMOD2 (Thuiller et al., 2009) and implements all ten algorithms available in the package.
 
